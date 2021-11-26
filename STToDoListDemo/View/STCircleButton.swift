@@ -43,7 +43,7 @@ class STCircleButton: UIButton {
     private lazy var smallCircleView: UIView = {
         var view = UIView()
         view.isHidden = true
-        view.backgroundColor = UIColor.st_color(hexString: "#c3c3c3")
+        view.backgroundColor = STConstant.c3c3c3()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.isUserInteractionEnabled = false
         view.layer.cornerRadius = 8

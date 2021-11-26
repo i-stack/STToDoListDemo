@@ -22,8 +22,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         navigationController.topViewController!.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem
         splitViewController.preferredDisplayMode = .allVisible
 
-        UISearchBar.appearance().tintColor = UIColor(red: 67.0/255.0, green: 205.0/255.0, blue: 135.0/255.0, alpha: 1.0)
-        UINavigationBar.appearance().tintColor = UIColor(red: 67.0/255.0, green: 205.0/255.0, blue: 135.0/255.0, alpha: 1.0)
+        UISearchBar.appearance().tintColor = STConstant.titleColor()
+        UINavigationBar.appearance().tintColor = STConstant.titleColor()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

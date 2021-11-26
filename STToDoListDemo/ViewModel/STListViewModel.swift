@@ -19,29 +19,50 @@ class STListViewModel: NSObject {
     }
     
     func addToDoList(title: String, content: String) {
+        self.addToDoList(title: title, content: content, isAdd: true, indexPath: nil)
+    }
+    
+    func addToDoList(title: String, content: String, isAdd: Bool, indexPath: IndexPath?) {
         guard title.count > 0 else { return }
         
         var contentModel = STListModel()
         contentModel.content = content
         contentModel.title = title
         
-        var needAddNewModel = true
-        if let pos = titleDic[title], pos.count > 0 {
-            if let index = Int(pos), index >= 0 {
-                if self.dataSources.count > index {
-                    needAddNewModel = false
-                    var contentSources = self.dataSources[index]
-                    contentSources.append(contentModel)
-                    self.dataSources[index] = contentSources
+        if isAdd {
+            var needAddNewModel = true
+            if let pos = titleDic[title], pos.count > 0 {
+                if let index = Int(pos), index >= 0 {
+                    if self.dataSources.count > index {
+                        needAddNewModel = false
+                        var contentSources = self.dataSources[index]
+                        contentSources.append(contentModel)
+                        self.dataSources[index] = contentSources
+                    }
                 }
             }
-        }
-        
-        if needAddNewModel {
-            var contentSources: [STListModel] = [STListModel]()
-            contentSources.append(contentModel)
-            dataSources.append(contentSources)
-            titleDic[title] = String(dataSources.count - 1)
+            
+            if needAddNewModel {
+                var contentSources: [STListModel] = [STListModel]()
+                contentSources.append(contentModel)
+                dataSources.append(contentSources)
+                titleDic[title] = String(dataSources.count - 1)
+            }
+        } else {
+            if let newIndexPath = indexPath, self.dataSources.count > newIndexPath.section {
+                var contentSources = self.dataSources[newIndexPath.section]
+                var hasExist = false
+                for model in contentSources {
+                    if model.content == content {
+                        hasExist = true
+                        break
+                    }
+                }
+                if !hasExist {
+                    contentSources.append(contentModel)
+                    self.dataSources[newIndexPath.section] = contentSources
+                }
+            }
         }
     }
     
@@ -127,5 +148,15 @@ class STListViewModel: NSObject {
                 filteredModels.append(tempModels)
             }
         }
+    }
+    
+    func filterGroupName(row: Int) -> String {
+        if self.dataSources.count > row {
+            let sources = self.dataSources[row]
+            if sources.count > 0 {
+                return sources[0].title
+            }
+        }
+        return ""
     }
 }

@@ -52,8 +52,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="grouped" separatorStyle="none" allowsSelection="NO" rowHeight="100" estimatedRowHeight="-1" sectionHeaderHeight="40" estimatedSectionHeaderHeight="-1" sectionFooterHeight="1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="Xom-US-HxU">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="grouped" separatorStyle="none" rowHeight="100" estimatedRowHeight="-1" sectionHeaderHeight="40" estimatedSectionHeaderHeight="-1" sectionFooterHeight="1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="Xom-US-HxU">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="607"/>
                                 <color key="backgroundColor" red="0.96470588235294119" green="0.96470588235294119" blue="0.96470588235294119" alpha="1" colorSpace="calibratedRGB"/>
                                 <color key="sectionIndexBackgroundColor" red="0.96470588235294119" green="0.96470588235294119" blue="0.96470588235294119" alpha="0.84705882352941175" colorSpace="calibratedRGB"/>
                                 <connections>
@@ -64,7 +64,7 @@
                         </subviews>
                         <color key="backgroundColor" red="0.96470588235294119" green="0.96470588235294119" blue="0.96470588235294119" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
-                            <constraint firstItem="sAk-k2-4qg" firstAttribute="top" secondItem="Xom-US-HxU" secondAttribute="bottom" id="1is-Wp-RZv"/>
+                            <constraint firstItem="sAk-k2-4qg" firstAttribute="top" secondItem="Xom-US-HxU" secondAttribute="bottom" constant="60" id="1is-Wp-RZv"/>
                             <constraint firstItem="Xom-US-HxU" firstAttribute="trailing" secondItem="gT4-6C-k5d" secondAttribute="trailingMargin" id="3FF-wJ-XRd"/>
                             <constraint firstItem="Xom-US-HxU" firstAttribute="top" secondItem="R6W-vE-F73" secondAttribute="bottom" id="5rJ-qq-YpU"/>
                             <constraint firstItem="Xom-US-HxU" firstAttribute="leading" secondItem="gT4-6C-k5d" secondAttribute="leadingMargin" id="ews-YI-kQO"/>
