@@ -52,13 +52,14 @@ class STSelectListView: UIView {
         view.layer.cornerRadius = 10
         view.separatorStyle = .none
         view.tableFooterView = UIView()
-        view.backgroundColor = UIColor.gray
+        view.backgroundColor = UIColor.white
         view.tableFooterView = UIView()
         return view
     }()
     
     private lazy var bgBtn: UIButton = {
         var view = UIButton()
+        view.backgroundColor = UIColor.black
         view.addTarget(self, action: #selector(bgBtnClick), for: .touchUpInside)
         return view
     }()

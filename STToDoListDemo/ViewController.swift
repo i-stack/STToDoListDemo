@@ -20,7 +20,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         
         self.tableView.register(STListTableViewCell.self, forCellReuseIdentifier: "STListTableViewCell")
-        //self.tableView.contentInsetAdjustmentBehavior = .never
+        self.tableView.contentInsetAdjustmentBehavior = .never
         
         self.viewModel.addToDoList(title: "SwiftUI Essentials", content: "Building Lists and Navigation")
         self.viewModel.addToDoList(title: "SwiftUI Essentials", content: "Creating and Combining Views")
@@ -35,16 +35,15 @@ class ViewController: UIViewController {
         self.viewModel.addToDoList(title: "App Design and Layout", content: "Handling User Input")
     
         self.title = "List"
-        definesPresentationContext = true
-        navigationItem.searchController = searchController
-        
+        self.definesPresentationContext = true
+        self.navigationItem.hidesSearchBarWhenScrolling = true
+        self.navigationItem.searchController = self.searchController
         self.view.addSubview(self.bottomView)
         self.bottomView.snp.makeConstraints { make in
             make.left.right.equalToSuperview()
             make.bottom.equalToSuperview().offset(-20)
             make.height.equalTo(50)
         }
-        
         
         NotificationCenter.default.addObserver(self, selector:#selector(keyBoardWillShowNotification(notification:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
     }
@@ -65,6 +64,7 @@ class ViewController: UIViewController {
     }
     
     func showSelectView() {
+        self.navigationController?.navigationBar.isHidden = true
         self.selectView.removeFromSuperview()
         self.view.addSubview(self.selectView)
         self.selectView.frame = CGRect.init(x: 0, y: UIScreen.main.bounds.size.height, width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height)
@@ -74,6 +74,7 @@ class ViewController: UIViewController {
     }
     
     func hiddenSelectView() {
+        self.navigationController?.navigationBar.isHidden = false
         self.selectView.removeFromSuperview()
         self.view.addSubview(self.selectView)
         UIView.animate(withDuration: 0.5) {
@@ -91,7 +92,6 @@ class ViewController: UIViewController {
                 if height < 20 {
                     height = 20
                 }
-                print("键盘高度=%d", height)
                 self.bottomView.snp.updateConstraints { make in
                     make.bottom.equalToSuperview().offset(-height)
                 }
@@ -105,9 +105,11 @@ class ViewController: UIViewController {
     
     private lazy var searchController: UISearchController = {
         let searchController = UISearchController(searchResultsController: nil)
-        searchController.hidesNavigationBarDuringPresentation = false
+        searchController.obscuresBackgroundDuringPresentation = true
         searchController.searchBar.placeholder = "Search To Do Item"
         searchController.searchResultsUpdater = self
+        searchController.delegate = self
+        searchController.searchBar.sizeToFit()
         return searchController
     }()
     
@@ -147,7 +149,7 @@ class ViewController: UIViewController {
     }()
 }
 
-extension ViewController: UISearchResultsUpdating {
+extension ViewController: UISearchResultsUpdating, UISearchControllerDelegate {
     func updateSearchResults(for searchController: UISearchController) {
         filterContentForSearchText(searchController.searchBar.text!)
     }
@@ -167,6 +169,11 @@ extension ViewController: UISearchResultsUpdating {
 }
 
 extension ViewController: UITableViewDelegate, UITableViewDataSource {
+    
+    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+        self.tableView.contentOffset = CGPoint.init(x: 0, y: floor(self.tableView.contentOffset.y))
+    }
+    
     func numberOfSections(in tableView: UITableView) -> Int {
         return self.viewModel.numberOfSections(isFiltering: isFiltering())
     }
@@ -287,6 +294,7 @@ extension ViewController: UITextFieldDelegate {
                     self.textField.type = .inputContent
                     self.textField.resignFirstResponder()
                     self.tableView.reloadData()
+                    STToastView.showToastView(str: "Success")
                 }
             }
         }
@@ -304,6 +312,7 @@ extension ViewController: UITextFieldDelegate {
             model.isSelected = true
             self.viewModel.didSelectRowAt(section: index.section, row: index.row, model: model)
             self.tableView.reloadData()
+            STToastView.showToastView(str: "Success")
         }
     }
 }
@@ -331,5 +340,6 @@ extension ViewController: STSelectListViewDelegate {
         self.textField.type = .inputContent
         self.textField.resignFirstResponder()
         self.tableView.reloadData()
+        STToastView.showToastView(str: "Success")
     }
 }
