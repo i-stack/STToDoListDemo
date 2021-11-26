@@ -30,9 +30,6 @@ class ViewController: UIViewController {
         self.viewModel.addToDoList(title: "Drawing and Animation", content: "Drawing Paths and Shapes")
 
         self.viewModel.addToDoList(title: "App Design and Layout", content: "Handling User Input")
-        self.viewModel.addToDoList(title: "App Design and Layout", content: "Building Lists and Navigation")
-        self.viewModel.addToDoList(title: "App Design and Layout", content: "Creating and Combining Views")
-        self.viewModel.addToDoList(title: "App Design and Layout", content: "Handling User Input")
     
         self.title = "List"
         self.definesPresentationContext = true
@@ -63,6 +60,13 @@ class ViewController: UIViewController {
         }
     }
     
+    func resetTextField() {
+        self.textField.text = ""
+        self.textField.originText = ""
+        self.textField.type = .inputContent
+        self.textField.placeholder = self.defalultPlaceholder
+    }
+    
     func showSelectView() {
         self.navigationController?.navigationBar.isHidden = true
         self.selectView.removeFromSuperview()
@@ -82,6 +86,7 @@ class ViewController: UIViewController {
         } completion: { result in
             self.selectView.removeFromSuperview()
         };
+        self.resetTextField()
     }
     
     @objc func keyBoardWillShowNotification(notification: NSNotification) {
@@ -198,9 +203,12 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
         let model = self.viewModel.cellForRowAt(section: indexPath.section, row: indexPath.row, isFiltering: isFiltering())
         if model.isDeleted, model.isSelected { return }
         self.selectIndexPath = indexPath
-        self.textField.type = .inputContent
         self.textField.becomeFirstResponder()
         self.textField.text = model.content
+        self.textField.originText = model.content
+        self.createModel.title = model.title
+        self.createModel.content = model.content
+        self.textField.type = .modify
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -225,8 +233,9 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
 
 extension ViewController: UITextFieldDelegate {
     
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+        self.textField.type = .inputContent
+        return true
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
@@ -241,6 +250,9 @@ extension ViewController: UITextFieldDelegate {
             case .selectGroup:
                 self.createModel.title = textField.text ?? ""
                 break
+            case .modify:
+                self.createModel.content = textField.text ?? ""
+                break
             default:
                 break
             }
@@ -248,26 +260,25 @@ extension ViewController: UITextFieldDelegate {
             if textField.text?.count ?? 0 < 1 {
                 if field.type == .selectGroup || field.type == .createGroup {
                     let alertVC = UIAlertController.init(title: "please input name", message: nil, preferredStyle: .alert)
-                    let okAction = UIAlertAction.init(title: "知道了", style: .default) { action in
-                        
-                    }
+                    let okAction = UIAlertAction.init(title: "知道了", style: .default) { action in }
                     alertVC.addAction(okAction)
                     self.navigationController?.present(alertVC, animated: true, completion: nil)
-                } else if field.type == .inputContent {
-                    // 删除 to do list
-                    self.textField.text = ""
-                    self.textField.type = .inputContent
-                    self.textField.placeholder = defalultPlaceholder
-                    self.deleteToDo(isDelete: true, indexPath: self.selectIndexPath ?? nil)
+                } else if field.type == .inputContent || field.type == .modify {
+                    if self.textField.originText.count > 0 {
+                        // 删除 to do list
+                        self.resetTextField()
+                        self.deleteToDo(isDelete: true, indexPath: self.selectIndexPath ?? nil)
+                    }
                 }
             } else {
+                if field.text == self.textField.originText { return }
                 if field.type == .inputContent {
                     let alertVC = UIAlertController.init(title: "select an action", message: nil, preferredStyle: .actionSheet)
                     let addNewAction = UIAlertAction.init(title: "Create a new group", style: .default) { action in
-                        self.textField.type = .createGroup
                         self.textField.text = ""
                         self.textField.placeholder = "enter a new group name"
                         self.textField.becomeFirstResponder()
+                        self.textField.type = .createGroup
                     }
                     let seleteAction = UIAlertAction.init(title: "Select a group", style: .default) { action in
                         self.textField.type = .selectGroup
@@ -275,8 +286,7 @@ extension ViewController: UITextFieldDelegate {
                         self.showSelectView()
                     }
                     let cancelAction = UIAlertAction.init(title: "do nothing", style: .cancel) { action in
-                        self.textField.text = ""
-                        self.textField.placeholder = self.defalultPlaceholder
+                        self.resetTextField()
                     }
                     alertVC.addAction(addNewAction)
                     alertVC.addAction(seleteAction)
@@ -286,15 +296,20 @@ extension ViewController: UITextFieldDelegate {
                     // 创建一个to do
                     if field.type == .selectGroup {
                         self.viewModel.addToDoList(title: self.createModel.title, content: self.createModel.content, isAdd: false, indexPath: self.selectIndexPath ?? nil)
+                        STToastView.showToastView(str: "add success")
                     } else  {
                         self.viewModel.addToDoList(title: self.createModel.title, content: self.createModel.content)
+                        STToastView.showToastView(str: "create success")
                     }
-                    self.textField.text = ""
-                    self.textField.placeholder = defalultPlaceholder
-                    self.textField.type = .inputContent
+                    self.resetTextField()
                     self.textField.resignFirstResponder()
                     self.tableView.reloadData()
-                    STToastView.showToastView(str: "Success")
+                } else if field.type == .modify {
+                    self.viewModel.modify(content: self.createModel.content, indexPath: self.selectIndexPath ?? nil)
+                    STToastView.showToastView(str: "modify success")
+                    self.resetTextField()
+                    self.textField.resignFirstResponder()
+                    self.tableView.reloadData()
                 }
             }
         }
@@ -312,7 +327,7 @@ extension ViewController: UITextFieldDelegate {
             model.isSelected = true
             self.viewModel.didSelectRowAt(section: index.section, row: index.row, model: model)
             self.tableView.reloadData()
-            STToastView.showToastView(str: "Success")
+            STToastView.showToastView(str: "delete success")
         }
     }
 }
@@ -333,13 +348,12 @@ extension ViewController: STSelectListViewDelegate {
     func listViewDidSelectRowAt(row: Int, name: String) {
         self.hiddenSelectView()
         self.textField.text = name
+        self.textField.originText = name
         self.createModel.title = name
         self.viewModel.addToDoList(title: self.createModel.title, content: self.createModel.content, isAdd: false, indexPath: IndexPath.init(row: 0, section: row))
-        self.textField.text = ""
-        self.textField.placeholder = defalultPlaceholder
-        self.textField.type = .inputContent
+        self.resetTextField()
         self.textField.resignFirstResponder()
         self.tableView.reloadData()
-        STToastView.showToastView(str: "Success")
+        STToastView.showToastView(str: "add success")
     }
 }

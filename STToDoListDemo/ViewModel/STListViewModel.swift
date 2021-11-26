@@ -18,6 +18,18 @@ class STListViewModel: NSObject {
         super.init()
     }
     
+    func modify(content: String, indexPath: IndexPath?) {
+        if let newIndexPath = indexPath {
+            if self.dataSources.count > newIndexPath.section {
+                var contentSources = self.dataSources[newIndexPath.section]
+                var model = contentSources[newIndexPath.row]
+                model.content = content
+                contentSources[newIndexPath.row] = model
+                self.dataSources[newIndexPath.section] = contentSources
+            }
+        }
+    }
+    
     func addToDoList(title: String, content: String) {
         self.addToDoList(title: title, content: content, isAdd: true, indexPath: nil)
     }
@@ -63,6 +75,18 @@ class STListViewModel: NSObject {
                     self.dataSources[newIndexPath.section] = contentSources
                 }
             }
+        }
+        
+        for (i, sources) in self.dataSources.enumerated() {
+            var tempSources: [STListModel] = [STListModel]()
+            for listModel in sources {
+                if listModel.isSelected {
+                    tempSources.insert(listModel, at: tempSources.count)
+                } else {
+                    tempSources.insert(listModel, at: 0)
+                }
+            }
+            self.dataSources[i] = tempSources
         }
     }
     

@@ -8,6 +8,7 @@
 import UIKit
 
 public enum STTextFieldType {
+    case modify
     case selectGroup
     case createGroup
     case inputContent
@@ -23,6 +24,8 @@ open class STTextField: UITextField {
     private var limitCount: Int = -1
     private var orginLeft: CGFloat = 0
     private var orginRight: CGFloat = 0
+    
+    open var originText = ""
     open var textIsCheck: Bool = false
     open var type: STTextFieldType = .inputContent
     weak open var cusDelegate: STTextFieldDelegate?

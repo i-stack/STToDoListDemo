@@ -61,8 +61,9 @@ class STListTableViewCell: UITableViewCell {
             attrStr.addAttributes([NSAttributedString.Key.foregroundColor: STConstant.d7dbe1(), NSAttributedString.Key.strikethroughColor: STConstant.d7dbe1()], range: NSRange.init(location: 0, length: content.count))
             self.contentLabel.attributedText = NSAttributedString.init(attributedString: attrStr)
         } else {
-            self.contentLabel.text = content
-            self.contentLabel.textColor = STConstant.a343c53()
+            let attrStr = NSMutableAttributedString.init(string: content)
+            attrStr.addAttributes([NSAttributedString.Key.foregroundColor: STConstant.a343c53(), NSAttributedString.Key.strikethroughColor: STConstant.a343c53()], range: NSRange.init(location: 0, length: content.count))
+            self.contentLabel.attributedText = attrStr
         }
     }
     
