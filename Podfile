@@ -6,6 +6,5 @@ target 'STToDoListDemo' do
   use_frameworks!
   
   pod 'SnapKit'
-  pod 'IQKeyboardManager'
   
 end
